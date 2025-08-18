@@ -1,2 +1,2 @@
 # hyprot
-a cli hyprland station to make customization ez
+a cli to make hyprland theme change easy

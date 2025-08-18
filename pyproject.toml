@@ -1,0 +1,9 @@
+[project]
+name = "hyprot"
+version = "0.1.0"
+description = "A cli to make hyprland theme change easy"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "click>=8.2.1",
+]
