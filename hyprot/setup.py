@@ -1,5 +1,7 @@
 import os
 
+import click
+
 
 def get_xdg_config_home():
     xdg_config_home = os.environ.get("XDG_CONFIG_HOME")
@@ -9,7 +11,8 @@ def get_xdg_config_home():
         return os.path.join(os.path.expanduser("~"), ".config")
 
 
-hyprot_config_path = os.path.join(get_xdg_config_home(), "hyprot")
+xdg_config_home = get_xdg_config_home()
+hyprot_config_path = os.path.join(xdg_config_home, "hyprot")
 
 
 def create_hyprot_folder():
@@ -18,4 +21,4 @@ def create_hyprot_folder():
     except FileExistsError:
         pass
     except OSError as e:
-        print("A system error occured while creating hyprot folder", e)
+        click.echo(f"An unexpected OS error occured: {e}")

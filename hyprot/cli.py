@@ -1,6 +1,5 @@
 import click
-
-from manager import ThemeManager
+from hyprot.manager import ThemeManager
 
 
 @click.group()
