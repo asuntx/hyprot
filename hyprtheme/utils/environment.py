@@ -8,7 +8,7 @@ from hyprot.setup import xdg_config_home
 # kitty
 # waybar?
 # wofi?
-# zsh? might bek
+# zsh? maybe
 
 # hypr environment
 hypr_dir: str = os.path.join(xdg_config_home, "hypr")
