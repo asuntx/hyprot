@@ -3,19 +3,19 @@ import os
 import click
 
 
-def get_xdg_config_home():
-    xdg_config_home = os.environ.get("XDG_CONFIG_HOME")
+def get_xdg_config_home() -> str:
+    xdg_config_home: str | None = os.environ.get("XDG_CONFIG_HOME")
     if xdg_config_home and os.path.isabs(xdg_config_home):
         return xdg_config_home
     else:
         return os.path.join(os.path.expanduser("~"), ".config")
 
 
-xdg_config_home = get_xdg_config_home()
-hyprot_config_path = os.path.join(xdg_config_home, "hyprot")
+xdg_config_home: str = get_xdg_config_home()
+hyprot_config_path: str = os.path.join(xdg_config_home, "hyprot")
 
 
-def create_hyprot_folder():
+def create_hyprot_folder() -> None:
     try:
         os.mkdir(hyprot_config_path)
     except FileExistsError:
