@@ -1,5 +1,6 @@
 import click
 from hyprtheme.manager import ThemeManager
+from hyprtheme.setup import run_setup, hyprtheme_config
 
 manager = ThemeManager()
 
@@ -8,6 +9,11 @@ manager = ThemeManager()
 def hyprtheme():
     """A hyprland theme manager"""
     pass
+
+
+@hyprtheme.command()
+def init():
+    run_setup()
 
 
 @hyprtheme.command()
@@ -42,6 +48,7 @@ def delete(theme_name):
     manager.delete_theme()
 
 
+hyprtheme.add_command(init)
 hyprtheme.add_command(sync)
 hyprtheme.add_command(list)
 hyprtheme.add_command(create)

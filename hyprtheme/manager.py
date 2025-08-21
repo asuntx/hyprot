@@ -3,10 +3,10 @@ import shutil
 from typing import List, Optional
 import click
 
-from hyprot.setup import hyprot_config_path
-from hyprot.utils.environment import hypr_dir
-from hyprot.utils.environment import environment as conf_files
-from hyprot.utils.environment import compare_conf_files
+from hyprtheme.setup import hyprtheme_path
+from hyprtheme.utils.environment import hypr_dir
+from hyprtheme.utils.environment import get_conf_files
+from hyprtheme.utils.environment import compare_conf_files
 
 
 class ThemeManager:
@@ -15,24 +15,22 @@ class ThemeManager:
 
     def set_theme_name(self, value: str):
         self.theme_name = value
-        self.theme_folder: str = os.path.join(hyprot_config_path, self.theme_name)
+        self.theme_folder: str = os.path.join(hyprtheme_path, self.theme_name)
 
     def list_themes(self) -> None:
         try:
             themes: List[str] = [
-                f.path for f in os.scandir(hyprot_config_path) if f.is_dir()
+                f.path for f in os.scandir(hyprtheme_path) if f.is_dir()
             ]
         except FileNotFoundError:
             # we might change this message
-            click.echo(
-                "Hyprot folder not found, why did you delete it? run 'hyprot restore' to restore it"
-            )
+            click.echo("hyprtheme directory not found, run 'hyprtheme init' to fix it")
         except OSError as e:
             click.echo(f"An unexpected OS error occured: {e}")
         else:
-            if themes is None:
+            if themes is None or themes == []:
                 click.echo(
-                    "You dont' have themes! create one with 'hyprot create {theme}"
+                    "You don't have themes! create one with 'hyprtheme create {theme}'"
                 )
             else:
                 for t in themes:
@@ -43,33 +41,39 @@ class ThemeManager:
         click.echo(f"{self.theme_name} has been set")
 
     def sync_themes(self) -> None:
-        """syncs all hyprot themes to available conf_files from user"""
-        themes: List[str] = [
-            f.path for f in os.scandir(hyprot_config_path) if f.is_dir()
-        ]
-        for t in themes:
-            compare_conf_files(t)
+        """syncs all hyprtheme themes to available conf_files from user"""
+        try:
+            themes: List[str] = [
+                f.path for f in os.scandir(hyprtheme_path) if f.is_dir()
+            ]
+        except FileNotFoundError:
+            click.echo("hyprtheme directory not found run 'hyprtheme init' to fix it")
+        except OSError as e:
+            click.echo(f"An unexpected OS error occurred: {e}")
+        else:
+            for t in themes:
+                compare_conf_files(t)
 
-    # watch
     def create_theme(self) -> None:
         try:
             os.mkdir(self.theme_folder)
+        except FileNotFoundError:
+            click.echo("hyprtheme directory not found run 'hyprtheme init' to fix it")
         except FileExistsError:
             click.echo("You've already created this theme.")
         except OSError as e:
             click.echo(f"An unexpected OS error occured: {e}")
         else:
+            conf_files = get_conf_files()
             if conf_files is not None:
-                # copy conf files to hyprot/theme
-                for conf_file in conf_files:
-                    conf_file_path: str = os.path.join(hypr_dir, conf_file)
-                    hypr_conf_file_path: str = os.path.join(
-                        self.theme_folder, conf_file
-                    )
+                # copy conf files to hyprtheme/theme
+                for file in conf_files:
+                    conf_file_path: str = os.path.join(hypr_dir, file)
+                    hypr_conf_file_path: str = os.path.join(self.theme_folder, file)
                     try:
                         shutil.copy(conf_file_path, hypr_conf_file_path)
                     except FileNotFoundError:
-                        click.echo("Not found hypr directory or hyprot directory")
+                        click.echo("Not found hypr directory or hyprtheme directory")
                     except OSError as e:
                         click.echo(f"An unexpected OS error occured: {e}")
                 else:
@@ -78,14 +82,19 @@ class ThemeManager:
                     )
 
     def rename_theme(self, new_theme_folder_name) -> None:
+        new_theme_folder_path = os.path.join(hyprtheme_path, new_theme_folder_name)
         try:
-            os.rename(self.theme_folder, new_theme_folder_name)
+            os.rename(self.theme_folder, new_theme_folder_path)
         except FileNotFoundError:
             click.echo(f"{self.theme_folder} folder doesn't exist")
         except FileExistsError:
             click.echo(f"{new_theme_folder_name} folder already exists")
         except OSError as e:
             click.echo(f"An unexpect OS error occured: {e}")
+        else:
+            click.echo(
+                f"'{self.theme_name}' theme changed to '{new_theme_folder_name}' successfuly"
+            )
 
     def delete_theme(self) -> None:
         try:
@@ -95,4 +104,4 @@ class ThemeManager:
         except OSError as e:
             click.echo(f"An unexpected OS error occured: {e}")
         else:
-            click.echo(f"{self.theme_name} theme deleted successfully")
+            click.echo(f"'{self.theme_name}' theme deleted successfully")

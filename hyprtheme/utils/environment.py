@@ -1,8 +1,8 @@
 import os
 import shutil
 import click
-from typing import Set
-from hyprot.setup import xdg_config_home
+from typing import Set, List
+from hyprtheme.setup import xdg_config_home
 
 # general environment
 # kitty
@@ -12,15 +12,16 @@ from hyprot.setup import xdg_config_home
 
 # hypr environment
 hypr_dir: str = os.path.join(xdg_config_home, "hypr")
-hyprland_conf: str = os.path.join(hypr_dir, "hyprland.conf")
-hyprpaper_conf: str = os.path.join(hypr_dir, "hyprpaper.conf")
-hyprlock_conf: str = os.path.join(hypr_dir, "hypaper.conf")
-hyprot_hyprland_environment: Set[str] = {
+# will i even use this?
+# hyprland_conf: str = os.path.join(hypr_dir, "hyprland.conf")
+# hyprpaper_conf: str = os.path.join(hypr_dir, "hyprpaper.conf")
+# hyprlock_conf: str = os.path.join(hypr_dir, "hypaper.conf")
+hyprland_environment: Set[str] = {
     "hyprland.conf",
     "hyprpaper.conf",
     "hyprlock.conf",
 }
-hypr_environment: str = ""
+# hypr_environment: str = ""
 
 
 def compare_conf_files(themeDir: str) -> None:
@@ -31,7 +32,7 @@ def compare_conf_files(themeDir: str) -> None:
     except FileNotFoundError:
         click.echo(f"{themeDir} doesn't exist?")
     else:
-        diffs: Set[str] = hyprot_hyprland_environment - theme_conf_files
+        diffs: Set[str] = hyprland_environment - theme_conf_files
         if diffs == set():
             return
         for diff in diffs:
@@ -49,18 +50,12 @@ def compare_conf_files(themeDir: str) -> None:
 
 
 def get_conf_files() -> Set[str] | None:
-    # hypr ones
-    # compare hyprot environment with user hypr one.
     try:
-        read_hypr_dir = os.listdir(hypr_dir)
+        read_hypr_dir: List[str] = os.listdir(hypr_dir)
     except OSError as e:
         click.echo(f"An unexpected OS error occurred: {e}")
     except FileNotFoundError:
         click.echo("hypr directory not found maybe you dont' have hyprland installed?")
     else:
-        hypr_environment = hyprot_hyprland_environment & set(read_hypr_dir)
-    # return generalenv and hypr
-    return hypr_environment
-
-
-environment = get_conf_files()
+        conf_files = hyprland_environment & set(read_hypr_dir)
+    return conf_files
