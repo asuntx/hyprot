@@ -17,6 +17,21 @@ def init():
 
 
 @hyprtheme.command()
+@click.argument("theme_name")
+@click.argument("dot_file")
+def add(theme_name, dot_file):
+    manager.set_theme_name(theme_name)
+    manager.add_dot_file(dot_file=dot_file)
+
+
+@hyprtheme.command()
+@click.argument("theme_name")
+def set(theme_name):
+    manager.set_theme_name(theme_name)
+    manager.set_theme()
+
+
+@hyprtheme.command()
 def list():
     manager.list_themes()
 
@@ -49,6 +64,8 @@ def delete(theme_name):
 
 
 hyprtheme.add_command(init)
+hyprtheme.add_command(add)
+hyprtheme.add_command(set)
 hyprtheme.add_command(sync)
 hyprtheme.add_command(list)
 hyprtheme.add_command(create)
