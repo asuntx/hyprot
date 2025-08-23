@@ -1,6 +1,6 @@
 import click
 from hyprtheme.manager import ThemeManager
-from hyprtheme.setup import run_setup, hyprtheme_config
+from hyprtheme.setup import run_setup
 
 manager = ThemeManager()
 

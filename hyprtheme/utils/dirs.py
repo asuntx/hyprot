@@ -1,35 +1,47 @@
 import click
 import os
 import shutil
-from hyprtheme.setup import hyprtheme_path
+from hyprtheme.utils.paths import HYPERTHEME_PATH
 
 
 class DirManager:
     def __init__(self, src):
-        self.src: str = os.path.join(hyprtheme_path, src)
+        self.src: str = os.path.join(HYPERTHEME_PATH, src)
         self.src_basename: str = src
 
-    def copy(self, dst: str) -> None:
+    def create(self) -> None | bool:
         try:
-            shutil.copy(self.src, dst)
+            os.mkdir(self.src)
         except OSError as e:
-            click.echo(f"An unexpected OS error occured {e}")
-
-    def delete(self, str) -> None:
-        try:
-            shutil.rmtree(self.src)
-        except FileNotFoundError:
-            click.echo(f"{self.src_basename} not found!")
-        except OSError as e:
-            click.echo(f"An unexpected OS error occured {e}")
+            click.echo(f"An unexpected OS error has occured: {e}")
         else:
-            click.echo(f"{self.src_basename} deleted succesfully")
+            return True
 
-    def rename(self, new_name: str) -> None:
+    def copy(self, src: str, dst: str) -> None | bool:
+        try:
+            shutil.copytree(src, dst)
+        except FileExistsError:
+            click.echo(f"{src} already exists")
+        except OSError as e:
+            click.echo(f"An unexpected OS error occured: {e}")
+        else:
+            return True
+
+    def delete(self, src: str) -> None | bool:
+        try:
+            shutil.rmtree(src)
+        except OSError as e:
+            click.echo(f"An unexpected OS error occured: {e}")
+        else:
+            return True
+
+    def rename(self, new_name: str) -> None | bool:
         try:
             os.rename(self.src, new_name)
         except OSError as e:
             click.echo(f"An unexpected OS error occured {e}")
+        else:
+            return True
 
     def scan(self):
         if not os.path.exists(self.src):
