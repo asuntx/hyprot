@@ -35,12 +35,6 @@ def set(theme_name):
 def list():
     manager.list_themes()
 
-
-@hyprtheme.command()
-def sync():
-    manager.sync_themes()
-
-
 @hyprtheme.command()
 @click.argument("theme_name")
 def create(theme_name):
@@ -53,7 +47,7 @@ def create(theme_name):
 @click.argument("new_name")
 def rename(theme_name, new_name):
     manager.set_theme_name(theme_name)
-    manager.rename_theme(new_theme_folder_name=new_name)
+    manager.rename_theme(new_name)
 
 
 @hyprtheme.command()
@@ -66,7 +60,6 @@ def delete(theme_name):
 hyprtheme.add_command(init)
 hyprtheme.add_command(add)
 hyprtheme.add_command(set)
-hyprtheme.add_command(sync)
 hyprtheme.add_command(list)
 hyprtheme.add_command(create)
 hyprtheme.add_command(rename)

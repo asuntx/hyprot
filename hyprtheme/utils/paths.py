@@ -24,10 +24,10 @@ HYPERTHEME_PATH: str = os.path.join(XDG_CONFIG_HOME, "hyprtheme")
 HYPRTHEME_CONFIG: str = os.path.join(ROOT, "hyprtheme.ini")
 
 # DOT_FILES_PATHS
-hypr_dir: str = os.path.join(XDG_CONFIG_HOME, "hypr")
-waybar_dir: str = os.path.join(XDG_CONFIG_HOME, "waybar")
-kitty_dir: str = os.path.join(XDG_CONFIG_HOME, "kitty")
-dot_dirs = [hypr_dir, waybar_dir, kitty_dir]
+HYPR_PATH: str = os.path.join(XDG_CONFIG_HOME, "hypr")
+WAYBAR_PATH: str = os.path.join(XDG_CONFIG_HOME, "waybar")
+KITTY_PATH: str = os.path.join(XDG_CONFIG_HOME, "kitty")
+dot_dirs = [HYPR_PATH, WAYBAR_PATH, KITTY_PATH]
 
 
 def get_conf_dirs() -> List[str] | None:

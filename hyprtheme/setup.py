@@ -11,7 +11,7 @@ dir = DirManager(HYPERTHEME_PATH)
 def create_hyprtheme_dir():
     config = configparser.ConfigParser()
     config.read(HYPRTHEME_CONFIG)
-    dir.create()
+    dir.create(HYPERTHEME_PATH)
     config["GENERAL"]["setup"] = "true"
     try:
         with open(HYPRTHEME_CONFIG, "w") as f:

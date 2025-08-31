@@ -1,10 +1,8 @@
 import os
-from typing import List, Optional
 import click
-
-from hyprtheme.utils.paths import get_conf_dirs, HYPERTHEME_PATH
+from typing import List, Optional
+from hyprtheme.utils.paths import get_conf_dirs, HYPERTHEME_PATH, HYPR_PATH
 from hyprtheme.utils.dirs import DirManager
-from hyprtheme.utils.symlinks import Symlinks
 from hyprtheme.utils.configReader import Config
 
 config = Config()
@@ -18,7 +16,6 @@ class ThemeManager:
         self.theme_name = value
         self.theme_folder: str = os.path.join(HYPERTHEME_PATH, self.theme_name)
         self.dirs = DirManager(self.theme_name)
-        self.symlinks = Symlinks(self.theme_folder)
 
     # todo
     def add_dot_file(self, dot_file) -> None:
@@ -43,23 +40,23 @@ class ThemeManager:
                 for t in themes:
                     click.echo(t)
 
+    # todo
     def set_theme(self) -> None:
         if config.read_theme() == self.theme_name:
             click.echo("You've already set this theme!")
             return
-
-        for f in self.dirs.scan():
-            f_path = os.path.join(self.theme_folder, f)
-            self.dirs.delete(f_path)
-            self.symlinks.link()
+        if os.path.exists(self.theme_folder):
+            click.echo("do soum")
         else:
-            if not config.set_theme(self.theme_name):
+            if self.theme_name:
+             if not config.set_theme(self.theme_name):
                 click.echo(f"{self.theme_name} couldn't set theme")
                 return
 
             click.echo(f"{self.theme_name} has been set")
 
-    # todo
+        click.echo(f"Couldn't set {self.theme_name} theme")
+
     def create_theme(self) -> None:
         if os.path.exists(self.theme_folder):
             click.echo(f"{self.theme_name} already exists.")
@@ -81,14 +78,19 @@ class ThemeManager:
             if not confirm:
                 return
 
-            create_theme_dir = self.dirs.create()
-            if not create_theme_dir:
+            if not self.dirs.create(self.theme_folder):
                 return
 
             for dir in conf_dirs:
                 hyprtheme_conf_dir = os.path.join(
                     self.theme_folder, os.path.basename(dir)
                 )
+
+                if dir == HYPR_PATH:
+                    if not self.dirs.copy(dir, hyprtheme_conf_dir):
+                        return
+                    continue
+
                 if not self.dirs.copy(dir, hyprtheme_conf_dir):
                     return
             else:
@@ -97,16 +99,16 @@ class ThemeManager:
                 )
 
         else:
-            if self.dirs.create():
+            if self.dirs.create(self.theme_folder):
                 click.echo(
                     f"{self.theme_name} theme has been created in {self.theme_folder}\nYou can add your dots later with 'hyprtheme add theme_name kitty' for example."
                 )
 
     def rename_theme(self, new_theme_name) -> None:
         new_theme_path = os.path.join(HYPERTHEME_PATH, new_theme_name)
-        if self.dirs.rename(self.theme_name, new_theme_path):
+        if self.dirs.rename(new_theme_path):
             click.echo(f"{self.theme_name} has been renamed to {new_theme_name}")
 
     def delete_theme(self) -> None:
-        if self.dirs.delete():
+        if self.dirs.delete(self.theme_folder):
             click.echo(f"{self.theme_name} theme has been deleted.")
