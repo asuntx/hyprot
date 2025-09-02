@@ -1,11 +1,18 @@
 import os
 import click
 from typing import List, Optional
-from hyprtheme.utils.paths import get_conf_dirs, HYPERTHEME_PATH, HYPR_PATH
+from hyprtheme.utils.paths import (
+    get_conf_dirs,
+    HYPERTHEME_PATH,
+    HYPR_PATH,
+    XDG_CONFIG_HOME,
+)
 from hyprtheme.utils.dirs import DirManager
 from hyprtheme.utils.configReader import Config
+from hyprtheme.utils.rsync import Rsync
 
 config = Config()
+rsync = Rsync()
 
 
 class ThemeManager:
@@ -37,8 +44,10 @@ class ThemeManager:
                     "You don't have themes! create one with 'hyprtheme create {theme}'"
                 )
             else:
+                i: int = 0
                 for t in themes:
-                    click.echo(t)
+                    i += 1
+                    click.echo(f"{i}. {os.path.basename(t)}")
 
     # todo
     def set_theme(self) -> None:
@@ -46,16 +55,27 @@ class ThemeManager:
             click.echo("You've already set this theme!")
             return
         if os.path.exists(self.theme_folder):
-            click.echo("do soum")
-        else:
-            if self.theme_name:
-             if not config.set_theme(self.theme_name):
-                click.echo(f"{self.theme_name} couldn't set theme")
+            try:
+                dot_files: List[str] = [
+                    f.path for f in os.scandir(self.theme_folder) if f.is_dir()
+                ]
+            except OSError as e:
+                click.echo(f"An unexpected OS error occured: {e}")
                 return
+            else:
+                for d in dot_files:
+                    dst = os.path.join(XDG_CONFIG_HOME, os.path.basename(d))
+                    if not rsync.sync(d, dst):
+                        return
+                else:
+                    if not config.set_theme(self.theme_name):
+                        click.echo("Couldn't update hyprtheme config")
+                        return
+                    # maybe a reload?
+                    click.echo(f"{self.theme_name} has been set")
 
-            click.echo(f"{self.theme_name} has been set")
-
-        click.echo(f"Couldn't set {self.theme_name} theme")
+        else:
+            click.echo(f"{self.theme_name} theme doesn't exist")
 
     def create_theme(self) -> None:
         if os.path.exists(self.theme_folder):

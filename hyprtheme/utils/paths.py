@@ -2,9 +2,6 @@ import os
 from typing import List
 from pathlib import Path
 
-# dot_files
-# zsh? maybe
-
 
 def get_xdg_config_home() -> str:
     XDG_CONFIG_HOME: str | None = os.environ.get("XDG_CONFIG_HOME")

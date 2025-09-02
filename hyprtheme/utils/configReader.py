@@ -10,7 +10,7 @@ class Config:
         current_theme = config.get("GENERAL", "theme", fallback="None")
         return current_theme
 
-    def set_theme(self, value: str) -> bool | None:
+    def set_theme(self, value: str) -> bool:
         config = configparser.ConfigParser()
         config.read(HYPRTHEME_CONFIG)
         config["GENERAL"]["theme"] = value
@@ -19,5 +19,6 @@ class Config:
                 config.write(f)
         except OSError as e:
             click.echo(f"An unexpected OS error occured: {e}")
+            return False
         else:
             return True
