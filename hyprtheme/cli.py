@@ -35,6 +35,7 @@ def set(theme_name):
 def list():
     manager.list_themes()
 
+
 @hyprtheme.command()
 @click.argument("theme_name")
 def create(theme_name):

@@ -3,6 +3,8 @@ import os
 import shutil
 from hyprtheme.utils.paths import HYPERTHEME_PATH
 from typing import Iterable
+
+
 class DirManager:
     def __init__(self, src):
         self.src: str = os.path.join(HYPERTHEME_PATH, src)
